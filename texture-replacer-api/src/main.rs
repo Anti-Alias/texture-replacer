@@ -1,4 +1,4 @@
-use rocket::{routes, launch, get, Config};
+use rocket::{routes, launch, get};
 
 
 #[get("/health")]
@@ -8,10 +8,6 @@ fn health() -> String {
 
 #[launch]
 fn rocket() -> _ {
-    let config = Config {
-        port: 8000,
-        ..Default::default()
-    };
-    rocket::custom(config)
+    rocket::build()
         .mount("/", routes![health])
 }

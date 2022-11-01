@@ -1,11 +1,13 @@
-FROM rust:1.64.0
 
-COPY . /app
+
+FROM rust:1.63.0
+
+ENV ROCKET_ADDRESS=0.0.0.0
+
 WORKDIR /app
+COPY . .
 
-RUN cargo build --release
-RUN cp ./target/release/texture-replacer-api .
-RUN rm -r ./target
-EXPOSE 8000
+RUN rustup default nightly
+RUN cargo build
 
-CMD ["./texture-replacer-api"]
+CMD ["cargo", "run"]
