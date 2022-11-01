@@ -1,2 +1,3 @@
-target
+texture-replacer-api/target
 texture-replacer-api/Cargo.lock
+texture-replacer-api/build-container.log
