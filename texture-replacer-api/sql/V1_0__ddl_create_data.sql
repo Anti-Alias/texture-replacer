@@ -14,21 +14,20 @@ CREATE INDEX ON platform(released);
 
 CREATE TABLE title (
     id serial PRIMARY KEY,
-    platform_id integer NOT NULL REFERENCES platform(id),
     name varchar(128) NOT NULL,
-    image_path varchar,
-    released timestamptz NOT NULL
+    image_path varchar
 );
-COMMENT ON TABLE title IS 'Game / software released for a single or multiple platforms.';
+COMMENT ON TABLE title IS 'Game / software released for at least one platform.';
 CREATE INDEX ON title(name);
 
 
-CREATE TABLE title_platform (
+CREATE TABLE release (
     title_id integer NOT NULL REFERENCES title(id),
     platform_id integer NOT NULL REFERENCES platform(id),
+    released timestamptz NOT NULL,
     UNIQUE (title_id, platform_id)
 );
-COMMENT ON TABLE title_platform IS 'Determines which titles belong to which platforms';
+COMMENT ON TABLE title_platform IS 'The release of a title for a specific platform.';
 CREATE INDEX ON title_platform(title_id);
 CREATE INDEX ON title_platform(platform_id);
 
