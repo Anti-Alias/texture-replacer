@@ -2,7 +2,7 @@ use chrono::Utc;
 use juniper::{ EmptyMutation, EmptySubscription };
 use juniper_rocket::{ GraphQLRequest, GraphQLResponse };
 use rocket::{ routes, launch, post, State };
-use texture_replacer_api::schema::{ Schema, Context, Platform, Query, Title };
+use asset_replacer_api::schema::{ Schema, Context, Platform, Query, Title };
 
 #[post("/graphql", data="<request>")]
 fn post_graphql_handler(

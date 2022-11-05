@@ -1,3 +1,6 @@
-texture-replacer-api/target
-texture-replacer-api/Cargo.lock
-texture-replacer-api/build-container.log
+# Root
+build-container.log
+
+# API
+asset-replacer-api/target
+asset-replacer-api/build-container.log
