@@ -18,7 +18,12 @@
     Issue was first reported [here](https://github.com/diesel-rs/diesel/issues/2519).
     Note that if you use a different version of PostgreSQL, or you installed it under a different directory, you'll need to modify the path.
 3.
-    Compile / run the application via:
+    Install the **Diesel** ORM globally with the following command:
+    ```bash
+    cargo install diesel_cli --no-default-features --features postgres
+    ```
+4.
+    Compile / run the application with the following command:
     ```rust
     cargo run
     ```
