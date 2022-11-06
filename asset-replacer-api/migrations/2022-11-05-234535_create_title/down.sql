@@ -1,1 +1,1 @@
-DROP TABLE IF EXISTS title;
+DROP TABLE title;

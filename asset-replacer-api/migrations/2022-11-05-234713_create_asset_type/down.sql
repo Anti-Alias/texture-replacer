@@ -1,1 +1,1 @@
-DROP TYPE IF EXISTS asset_type;
+DROP TYPE asset_type;

@@ -1,1 +1,1 @@
-DROP TYPE IF EXISTS region;
+DROP TYPE region;

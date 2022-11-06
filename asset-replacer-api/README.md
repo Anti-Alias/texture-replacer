@@ -44,6 +44,7 @@
     Ensure that PostgreSQL is running beforehand.
     ```bash
     diesel setup
+    diesel migration run
     ```
 7.
     Compile / run the application with the following command:

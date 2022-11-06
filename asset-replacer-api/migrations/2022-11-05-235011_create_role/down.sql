@@ -1,1 +1,1 @@
-DROP TYPE IF EXISTS role;
+DROP TYPE role;

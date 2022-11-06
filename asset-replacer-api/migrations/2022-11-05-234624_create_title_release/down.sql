@@ -1,1 +1,1 @@
-DROP TABLE IF EXISTS title_release;
+DROP TABLE title_release;

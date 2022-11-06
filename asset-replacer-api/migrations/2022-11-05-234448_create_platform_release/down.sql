@@ -1,1 +1,1 @@
-DROP TABLE IF EXISTS platform_release;
+DROP TABLE platform_release;

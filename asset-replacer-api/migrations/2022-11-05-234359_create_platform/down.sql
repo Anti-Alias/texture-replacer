@@ -1,1 +1,1 @@
-DROP TABLE IF EXISTS platform;
+DROP TABLE platform;
