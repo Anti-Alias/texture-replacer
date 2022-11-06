@@ -5,15 +5,12 @@ COMMENT ON TYPE region IS 'Region of the world where platforms and titles are re
 CREATE TABLE platform (
     id serial PRIMARY KEY,
     name varchar(128) NOT NULL UNIQUE,
-    short_name varchar(128),
     image_path varchar
 );
 COMMENT ON TABLE platform IS 'Computer hardware + software that games are designed to run on (PC, macOS NES, PSX, etc)';
 COMMENT ON COLUMN platform.name IS 'Full name of the platform. (Nintendo Entertainment System, PlayStation, etc)';
-COMMENT ON COLUMN platform.short_name IS 'Short name of the system (NES, PS1, etc)';
 COMMENT ON COLUMN platform.image_path IS 'Relative path to the platform''s image. Typically part of a URL accessible over HTTP(s).';
 CREATE INDEX ON platform(name);
-CREATE INDEX ON platform(short_name);
 
 
 CREATE TABLE platform_release(
@@ -72,15 +69,15 @@ CREATE TABLE "user" (
 COMMENT ON TABLE "user" IS 'User that is capable of creating asset packs and assigning assets to them.';
 
 
-INSERT INTO platform (id, name, short_name, image_path) VALUES
-    (1, 'Nintendo Entertainment System', 'NES', '/images/platforms/nes.png'),
-    (2, 'Super Nintendo', 'SNES', '/images/platforms/snes.png'),
-    (3, 'Nintendo 64', 'N64', '/images/platforms/n64.png'),
-    (4, 'GameCube', 'GC', '/images/platforms/gc.png'),
-    (5, 'Wii', null, '/images/platforms/wii.png'),
-    (6, 'Wii U', null, '/images/platforms/wii_u.png'),
-    (7, 'Nintendo Switch', 'Switch', '/images/platforms/switch.png'),
-    (8, 'Sega Genesis', 'Genesis', '/images/platforms/genesis.png');
+INSERT INTO platform (id, name, image_path) VALUES
+    (1, 'Nintendo Entertainment System', '/images/platforms/nes.png'),
+    (2, 'Super Nintendo', '/images/platforms/snes.png'),
+    (3, 'Nintendo 64', '/images/platforms/n64.png'),
+    (4, 'GameCube', '/images/platforms/gc.png'),
+    (5, 'Wii', '/images/platforms/wii.png'),
+    (6, 'Wii U', '/images/platforms/wii_u.png'),
+    (7, 'Nintendo Switch', '/images/platforms/switch.png'),
+    (8, 'Sega Genesis', '/images/platforms/genesis.png');
 
 INSERT INTO platform_release (platform_id, region, released) VALUES
     (1, 'NA', TO_TIMESTAMP('1986-09-27', 'YYYY-MM-DD')),    -- NES NA

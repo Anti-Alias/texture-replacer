@@ -1,28 +1,16 @@
-use std::{collections::HashMap, ops::Deref};
+use std::ops::Deref;
 
 use juniper::{ graphql_object, GraphQLObject, ID, FieldResult, RootNode, EmptyMutation, EmptySubscription };
 use chrono::prelude::*;
+use sqlx::{ Postgres, Pool, FromRow };
 
-
-/// Mock database
-pub struct Database {
-    pub platforms: HashMap<String, Platform>,
-    pub titles: HashMap<String, Title>,
-    pub title_platforms: Vec<(String, String)>
-}
 
 pub struct Context {
-    pub database: Database
+    pub pool: Pool<Postgres>
 }
 impl Context {
-    pub fn new() -> Self {
-        Self {
-            database: Database {
-                platforms: HashMap::new(),
-                titles: HashMap::new(),
-                title_platforms: Vec::new()
-            }
-        }
+    pub fn new(pool: Pool<Postgres>) -> Self {
+        Self { pool }
     }
 }
 impl juniper::Context for Context {}
@@ -32,16 +20,16 @@ pub struct Query;
 
 #[graphql_object(context = Context)]
 impl Query {
-    pub fn platform(context: &Context, id: ID) -> FieldResult<Option<Platform>> {
-        let result = context.database.platforms
-            .get(id.deref())
-            .map(|data| data.clone())
-            .clone();
-        Ok(result)
+    pub async fn platform(context: &Context, id: ID) -> Option<Platform> {
+        let id: i32 = id.parse().unwrap();
+        sqlx::query_as("SELECT id, name, image_path FROM platform WHERE id = $1")
+            .bind(id)
+            .fetch_optional(&context.pool)
+            .await
+            .unwrap()
     }
     pub fn title(context: &Context, id: ID) -> FieldResult<Option<&Title>> {
-        let result = context.database.titles.get(id.deref());
-        Ok(result)
+        todo!()
     }
 }
 
@@ -56,18 +44,17 @@ pub type Schema = RootNode<
 
 
 //#[graphql(description = "Computer hardware + software that games are designed to run on (PC, macOS NES, PSX, etc)")]
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, FromRow)]
 pub struct Platform {
-    pub id: String,
+    pub id: i32,
     pub name: String,
-    pub image_path: String,
-    pub released: DateTime<Utc>
+    pub image_path: String
 }
 
 #[graphql_object(context = Context)]
 impl Platform {
-    pub fn id(&self) -> &str {
-        &self.id
+    pub fn id(&self) -> i32 {
+        self.id
     }
     pub fn name(&self) -> &str {
         &self.name
@@ -75,16 +62,8 @@ impl Platform {
     pub fn image_path(&self) -> &str {
         &self.image_path
     }
-    pub fn released(&self) -> &DateTime<Utc> {
-        &self.released
-    }
     pub fn titles(&self, context: &Context) -> Vec<Title> {
-        let db = &context.database;
-        let results: Vec<Title> = db.title_platforms.iter()
-            .filter(|(_, pid)| pid == &self.id)
-            .map(|(tid, _)| db.titles.get(tid).unwrap().clone())
-            .collect();
-        results
+        todo!()
     }
 }
 
