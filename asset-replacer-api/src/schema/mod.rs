@@ -1,6 +1,4 @@
-use std::ops::Deref;
-
-use juniper::{ graphql_object, GraphQLObject, ID, FieldResult, RootNode, EmptyMutation, EmptySubscription };
+use juniper::{ graphql_object, GraphQLObject, ID, RootNode, EmptyMutation, EmptySubscription };
 use chrono::prelude::*;
 use sqlx::{ Postgres, Pool, FromRow };
 
@@ -20,6 +18,7 @@ pub struct Query;
 
 #[graphql_object(context = Context)]
 impl Query {
+
     pub async fn platform(context: &Context, id: ID) -> Option<Platform> {
         let id: i32 = id.parse().unwrap();
         sqlx::query_as("SELECT id, name, image_path FROM platform WHERE id = $1")
@@ -28,8 +27,14 @@ impl Query {
             .await
             .unwrap()
     }
-    pub fn title(context: &Context, id: ID) -> FieldResult<Option<&Title>> {
-        todo!()
+
+    pub async fn title(context: &Context, id: ID) -> Option<Title> {
+        let id: i32 = id.parse().unwrap();
+        sqlx::query_as("SELECT id, name, image_path FROM title WHERE id = $1")
+            .bind(id)
+            .fetch_optional(&context.pool)
+            .await
+            .unwrap()
     }
 }
 
@@ -67,10 +72,10 @@ impl Platform {
     }
 }
 
-#[derive(Debug, Clone, GraphQLObject)]
+#[derive(Debug, Clone, GraphQLObject, FromRow)]
 #[graphql(description = "Game / software released for at least one platform.")]
 pub struct Title {
-    pub id: String,
+    pub id: i32,
     pub name: String,
     pub image_path: String,
     pub released: DateTime<Utc>
