@@ -1,0 +1,1 @@
+INSERT INTO platform_release (platform_id, region, released) VALUES (1, 'NA', TO_TIMESTAMP('1980-09-27', 'YYYY-MM-DD'));
