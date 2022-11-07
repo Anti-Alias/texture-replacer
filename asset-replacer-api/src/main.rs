@@ -3,7 +3,7 @@ use juniper_rocket::{ GraphQLRequest, GraphQLResponse };
 use rocket::{ routes, launch, post, State };
 use asset_replacer_api::schema::{ Schema, Context, Query };
 use sqlx::postgres::PgPoolOptions;
-
+    
 #[post("/graphql", data="<request>")]
 async fn post_graphql_handler(
     context: &State<Context>,

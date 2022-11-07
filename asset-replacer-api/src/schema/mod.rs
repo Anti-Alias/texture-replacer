@@ -3,7 +3,8 @@ use chrono::prelude::*;
 use sqlx::{ Postgres, Pool, FromRow };
 
 
-pub struct Context {
+/// GraphQL context type that houses the database pool among other things.
+pub struct Context {    
     pub pool: Pool<Postgres>
 }
 impl Context {
@@ -12,6 +13,9 @@ impl Context {
     }
 }
 impl juniper::Context for Context {}
+
+
+
 
 /// Main query type
 pub struct Query;
@@ -39,6 +43,8 @@ impl Query {
 }
 
 
+
+
 /// Schema type alias
 pub type Schema = RootNode<
     'static,
@@ -48,7 +54,7 @@ pub type Schema = RootNode<
 >;
 
 
-//#[graphql(description = "Computer hardware + software that games are designed to run on (PC, macOS NES, PSX, etc)")]
+
 #[derive(Clone, Debug, FromRow)]
 pub struct Platform {
     pub id: i32,
@@ -56,7 +62,7 @@ pub struct Platform {
     pub image_path: String
 }
 
-#[graphql_object(context = Context)]
+#[graphql_object(context = Context, description = "Platform that games / software can be released on. (NES, SNES, Genesis, PC, etc)")]
 impl Platform {
     pub fn id(&self) -> i32 {
         self.id
@@ -67,16 +73,28 @@ impl Platform {
     pub fn image_path(&self) -> &str {
         &self.image_path
     }
-    pub fn titles(&self, context: &Context) -> Vec<Title> {
-        todo!()
+    pub async fn titles(&self, context: &Context) -> Vec<Title> {
+        let query = "
+        SELECT * FROM title_release tr INNER JOIN
+        ";
+        sqlx::query_as("SELECT id, name, image_path FROM title WHERE platform_id = $1")
+            .bind(self.id)
+            .fetch_all(&context.pool)
+            .await
+            .unwrap()
     }
 }
+
+
 
 #[derive(Debug, Clone, GraphQLObject, FromRow)]
 #[graphql(description = "Game / software released for at least one platform.")]
 pub struct Title {
     pub id: i32,
     pub name: String,
-    pub image_path: String,
-    pub released: DateTime<Utc>
+    pub image_path: String
+}
+
+pub struct TitleRelease {
+    
 }
