@@ -17,6 +17,7 @@ CREATE TABLE platform (
 
 CREATE TABLE title (
     id serial PRIMARY KEY,
+    platform_id integer NOT NULL REFERENCES platform(id),
     name varchar(128) NOT NULL,
     version varchar(128) NOT NULL,
     released timestamptz,
@@ -26,9 +27,7 @@ CREATE TABLE title (
 CREATE TABLE asset (
     id serial PRIMARY KEY,
     path varchar(128) NOT NULL,
-    type asset_type NOT NULL,
-    created timestamptz NOT NULL,
-    updated timestamptz NOT NULL
+    type asset_type NOT NULL
 );
 
 CREATE TABLE "user" (
@@ -43,12 +42,11 @@ CREATE TABLE "user" (
 
 ---------------- Indexes ----------------
 CREATE INDEX ON platform(name);
+CREATE INDEX ON title(platform_id);
 CREATE INDEX ON title(name);
 CREATE INDEX ON title(released);
 CREATE INDEX ON asset(path);
 CREATE INDEX ON asset(type);
-CREATE INDEX ON asset(created);
-CREATE INDEX ON asset(updated);
 CREATE INDEX ON "user"(name);
 CREATE INDEX ON "user"(email);
 
@@ -81,9 +79,8 @@ INSERT INTO platform (id, name, image_path) VALUES
     (7, 'Nintendo Switch', '/images/platforms/switch.png'),
     (8, 'Sega Genesis', '/images/platforms/genesis.png');
 
-INSERT INTO title (id, name, version, released, image_path) VALUES
-    (1, 'Super Mario Bros.',    'USA',  null,                                   '/images/titles/smb.png'),
-    (2, 'Super Mario Bros.',    'JP',   TO_DATE('1985-09-13', 'YYYY-MM-DD'),    '/images/titles/smb.png'),
-    (3, 'Super Mario 64.',      'USA',  TO_DATE('1996-06-23', 'YYYY-MM-DD'),    '/images/titles/sm64.png'),
-    (4, 'Super Mario 64.',      'EU',  TO_DATE('1996-06-23', 'YYYY-MM-DD'),     '/images/titles/sm64.png');
-
+INSERT INTO title (id, platform_id, name, version, released, image_path) VALUES
+    (1, 1,  'Super Mario Bros.',    'USA',  null,                                   '/images/titles/smb.png'),
+    (2, 1,  'Super Mario Bros.',    'JP',   TO_DATE('1985-09-13', 'YYYY-MM-DD'),    '/images/titles/smb.png'),
+    (3, 3,  'Super Mario 64.',      'USA',  TO_DATE('1996-06-23', 'YYYY-MM-DD'),    '/images/titles/sm64.png'),
+    (4, 3,  'Super Mario 64.',      'EU',  TO_DATE('1996-06-23', 'YYYY-MM-DD'),     '/images/titles/sm64.png');

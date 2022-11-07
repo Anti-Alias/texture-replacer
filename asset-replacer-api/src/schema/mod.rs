@@ -32,11 +32,25 @@ impl Query {
             .unwrap()
     }
 
+    pub async fn platforms(context: &Context) -> Vec<Platform> {
+        sqlx::query_as("SELECT id, name, image_path FROM platform")
+            .fetch_all(&context.pool)
+            .await
+            .unwrap()
+    }
+
     pub async fn title(context: &Context, id: ID) -> Option<Title> {
         let id: i32 = id.parse().unwrap();
         sqlx::query_as("SELECT id, name, image_path FROM title WHERE id = $1")
             .bind(id)
             .fetch_optional(&context.pool)
+            .await
+            .unwrap()
+    }
+
+    pub async fn titles(context: &Context) -> Vec<Title> {
+        sqlx::query_as("SELECT id, platform_id, name, version, released, image_path FROM title")
+            .fetch_all(&context.pool)
             .await
             .unwrap()
     }
@@ -74,10 +88,7 @@ impl Platform {
         &self.image_path
     }
     pub async fn titles(&self, context: &Context) -> Vec<Title> {
-        let query = "
-        SELECT * FROM title_release tr INNER JOIN
-        ";
-        sqlx::query_as("SELECT id, name, image_path FROM title WHERE platform_id = $1")
+        sqlx::query_as("SELECT id, platform_id, name, version, released, image_path FROM title WHERE platform_id = $1")
             .bind(self.id)
             .fetch_all(&context.pool)
             .await
@@ -87,14 +98,38 @@ impl Platform {
 
 
 
-#[derive(Debug, Clone, GraphQLObject, FromRow)]
-#[graphql(description = "Game / software released for at least one platform.")]
+#[derive(Debug, Clone, FromRow)]
 pub struct Title {
     pub id: i32,
+    pub platform_id: i32,
     pub name: String,
-    pub image_path: String
+    pub version: String,
+    pub released: Option<DateTime<Utc>>,
+    pub image_path: Option<String>
 }
 
-pub struct TitleRelease {
-    
+#[graphql_object(context = Context, description = "Game / software released for at least one platform.")]
+impl Title {
+    pub fn id(&self) -> i32 {
+        self.id
+    }
+    pub fn name(&self) -> &str {
+        &self.name
+    }
+    pub fn version(&self) -> &str {
+        &self.version
+    }
+    pub fn released(&self) -> &Option<DateTime<Utc>> {
+        &self.released
+    }
+    pub fn image_path(&self) -> Option<&str> {
+        self.image_path.as_deref()
+    }
+    pub async fn platform(&self, context: &Context) -> Platform {
+        sqlx::query_as("SELECT id, name, image_path FROM platform WHERE id = $1")
+            .bind(self.platform_id)
+            .fetch_one(&context.pool)
+            .await
+            .unwrap_or_else(|e| panic!("{}", e))
+    }
 }
